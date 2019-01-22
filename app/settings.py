@@ -16,3 +16,5 @@ HTTP_ADDRESS = '0.0.0.0'
 logging.getLogger().setLevel(logging.DEBUG)
 
 JOB_CLASS_PACKAGES = ['app']
+STATIC_DIR_PATH = './static'
+TEMPLATE_DIR_PATH = './static'
