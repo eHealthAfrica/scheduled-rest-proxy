@@ -1,0 +1,314 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "owner",
+    "source_url",
+    "source_type",
+    "source_msg_path",
+    "source_datamap",
+    "dest_type",
+    "dest_url",
+    "dest_datamap"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "string",
+      "title": "The Id Schema",
+      "default": "",
+      "examples": [
+        "A job id"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "owner": {
+      "$id": "#/properties/owner",
+      "type": "string",
+      "title": "The Owner Schema",
+      "default": "",
+      "examples": [
+        "the_owners_id"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "constants": {
+      "$id": "#/properties/constants",
+      "type": "object",
+      "title": "The Constants Schema",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "initial_query_resources": {
+      "$id": "#/properties/initial_query_resources",
+      "type": "object",
+      "title": "The Initial_query_resources Schema",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "query_resource": {
+      "$id": "#/properties/query_resource",
+      "type": "array",
+      "title": "The Query_resource Schema",
+      "items": {
+        "$id": "#/properties/query_resource/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "next",
+          "since"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "source_url": {
+      "$id": "#/properties/source_url",
+      "type": "string",
+      "title": "The Source_url Schema",
+      "default": "",
+      "examples": [
+        "http://someurl.com/api/"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "source_type": {
+      "$id": "#/properties/source_type",
+      "type": "string",
+      "title": "The Source_type Schema",
+      "default": "",
+      "examples": [
+        "GET"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "source_basic_auth": {
+      "$id": "#/properties/source_basic_auth",
+      "type": "object",
+      "title": "The Source_basic_auth Schema"
+    },
+    "source_token": {
+      "$id": "#/properties/source_token",
+      "type": "string",
+      "title": "The Source_token Schema",
+      "default": "",
+      "examples": [
+        "a token"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "source_pagination_url": {
+      "$id": "#/properties/source_pagination_url",
+      "type": "string",
+      "title": "The Source_pagination_url Schema",
+      "default": "",
+      "examples": [
+        "$.resource.next"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "source_msg_path": {
+      "$id": "#/properties/source_msg_path",
+      "type": "string",
+      "title": "The Source_msg_path Schema",
+      "default": "",
+      "examples": [
+        "$.results[*]"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "source_datamap": {
+      "$id": "#/properties/source_datamap",
+      "type": "object",
+      "title": "The Source_datamap Schema",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_headers": {
+      "$id": "#/properties/source_headers",
+      "type": "array",
+      "title": "The Source Headers Schema",
+      "items": {
+        "$id": "#/properties/source_headers/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "next",
+          "since"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "source_query_params": {
+      "$id": "#/properties/source_query_params",
+      "type": "array",
+      "title": "The Source_query_params Schema",
+      "items": {
+        "$id": "#/properties/source_query_params/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "since",
+          "resource_type"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "source_json_body": {
+      "$id": "#/properties/source_json_body",
+      "type": "array",
+      "title": "The Source_json_body Schema",
+      "items": {
+        "$id": "#/properties/source_json_body/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "next",
+          "since"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "dest_type": {
+      "$id": "#/properties/dest_type",
+      "type": "string",
+      "title": "The Dest_type Schema",
+      "default": "",
+      "examples": [
+        "POST"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "dest_url": {
+      "$id": "#/properties/dest_url",
+      "type": "string",
+      "title": "The Dest_url Schema",
+      "default": "",
+      "examples": [
+        "http://someurl.com/api/"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "dest_basic_auth": {
+      "$id": "#/properties/dest_basic_auth",
+      "type": "object",
+      "title": "The Dest_basic_auth Schema"
+    },
+    "dest_token": {
+      "$id": "#/properties/dest_token",
+      "type": "string",
+      "title": "The Dest_token Schema",
+      "default": "",
+      "examples": [
+        "a token"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "dest_datamap": {
+      "$id": "#/properties/dest_datamap",
+      "type": "object",
+      "title": "The Dest_datamap Schema",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dest_headers": {
+      "$id": "#/properties/dest_headers",
+      "type": "array",
+      "title": "The Destination Headers Schema",
+      "items": {
+        "$id": "#/properties/dest_headers/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "next",
+          "since"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "dest_query_params": {
+      "$id": "#/properties/dest_query_params",
+      "type": "array",
+      "title": "The Dest_query_params Schema",
+      "items": {
+        "$id": "#/properties/dest_query_params/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "since",
+          "redest_type"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "dest_json_body": {
+      "$id": "#/properties/dest_json_body",
+      "type": "array",
+      "title": "The Dest_json_body Schema",
+      "items": {
+        "$id": "#/properties/dest_json_body/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "next",
+          "since"
+        ],
+        "pattern": "^(.*)$"
+      }
+    }
+  }
+}
