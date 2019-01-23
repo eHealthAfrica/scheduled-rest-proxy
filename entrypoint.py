@@ -18,12 +18,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import os
-
-os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'app.settings'  # needed by scheduler
-
-from ndscheduler.server.server import SchedulerServer  # noqa
+from app.server import AuthenticatedServer
 
 
 if __name__ == '__main__':
-    SchedulerServer.run()
+    AuthenticatedServer.run()
