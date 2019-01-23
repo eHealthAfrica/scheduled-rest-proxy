@@ -74,7 +74,6 @@ def require_basic_auth(handler_class, config=None):
                 auth_header = handler.request.headers.get('Authorization')
                 if auth_header and auth_header.startswith('Basic '):
                     bytes_header = auth_header.encode('utf-8')
-                    print(bytes_header[6:])
                     auth_decoded = base64.decodestring(bytes_header[6:]).decode('utf-8')
                     if f'{config["user"]}:{config["pass"]}' == str(auth_decoded):
                         return True

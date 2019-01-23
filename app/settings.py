@@ -21,14 +21,15 @@
 """Settings to override default settings."""
 
 import logging
+import os
 
 #
 # Override settings
 #
 DEBUG = True
 
-HTTP_PORT = 3333
-HTTP_ADDRESS = '0.0.0.0'
+HTTP_PORT = int(os.environ.get('PORT', 3333))
+HTTP_ADDRESS = os.environ.get('HOST', '0.0.0.0')
 
 #
 # Set logging level
@@ -40,7 +41,9 @@ STATIC_DIR_PATH = './static'
 TEMPLATE_DIR_PATH = './static'
 
 BASIC_AUTH_CONFIG = {
-    'user': 'admin',
-    'pass': 'adminadmin',
-    'realm': 'Aether Scheduler'
+    'user': os.environ.get('USERNAME', ''),
+    'pass': os.environ.get('PASSWORD', ''),
+    'realm': os.environ.get('REALM', 'Aether Scheduler')
 }
+
+print(BASIC_AUTH_CONFIG)

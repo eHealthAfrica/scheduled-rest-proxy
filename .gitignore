@@ -1,3 +1,4 @@
 datastore.db
 *.json
 !schema.json
+.env

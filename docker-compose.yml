@@ -1,0 +1,17 @@
+version: "2.1"
+services:
+  rest-proxy:
+    image: ehealthafrica/scheduled-rest-proxy
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+     - PORT=${PORT}
+     - USERNAME=${USERNAME}
+     - PASSWORD=${PASSWORD}
+     - REALM=${REALM}
+    ports:
+     - "${PORT}:${PORT}"
+    volumes:
+     - ./conf:/code/conf
+    command: start
