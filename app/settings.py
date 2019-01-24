@@ -31,10 +31,21 @@ DEBUG = True
 HTTP_PORT = int(os.environ.get('PORT', 3333))
 HTTP_ADDRESS = os.environ.get('HOST', '0.0.0.0')
 
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
+REDIS_DB = int(os.environ.get('REDIS_DB', 0))
+
+DEFAULT_LL = 'ERROR'
+LOG_LEVEL = os.environ.get('LOG_LEVEL', DEFAULT_LL)
+
 #
 # Set logging level
 #
-logging.getLogger().setLevel(logging.DEBUG)
+
+try:
+    logging.getLogger().setLevel(LOG_LEVEL)
+except Exception:
+    logging.getLogger().setLevel(DEFAULT_LL)
 
 JOB_CLASS_PACKAGES = ['app']
 STATIC_DIR_PATH = './static'
@@ -45,5 +56,3 @@ BASIC_AUTH_CONFIG = {
     'pass': os.environ.get('PASSWORD', ''),
     'realm': os.environ.get('REALM', 'Aether Scheduler')
 }
-
-print(BASIC_AUTH_CONFIG)

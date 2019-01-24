@@ -20,6 +20,7 @@
 
 
 import logging
+from .settings import LOG_LEVEL, DEFAULT_LL
 
 LOG = logging.getLogger(__name__)
 
@@ -27,5 +28,7 @@ handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter(
     '%(asctime)s [Consumer] %(levelname)-8s %(message)s'))
 LOG.addHandler(handler)
-level = logging.getLevelName('INFO')
-LOG.setLevel(level)
+try:
+    LOG.setLevel(LOG_LEVEL)
+except Exception:
+    LOG.setLevel(DEFAULT_LL)

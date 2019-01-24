@@ -21,12 +21,14 @@
 import json
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+import redis
 import requests
 from requests.auth import HTTPBasicAuth
 
 from .errors import ReportableError, ERR
 from .logger import LOG
 from .jsonpath import CachedParser
+from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 from .utils import BUILTINS, replace_nested
 
 # Load Schema for Job Configuration
@@ -35,22 +37,26 @@ SCHEMA = None
 with open('job_spec.json') as f:
     SCHEMA = json.load(f)
 
-# This needs to be replaced with real persistence
+# State persistence between job runs
 
-mock_datastore = {}
-
+REDIS = redis.Redis(
+            host=REDIS_HOST,
+            port=REDIS_PORT,
+            db=REDIS_DB,
+            encoding="utf-8",
+            decode_responses=True
+        )
 
 def load_from_datastore(job_id):
-    if job_id in mock_datastore:
-        return mock_datastore[job_id]
+    if REDIS.exists(job_id):
+        return json.loads(REDIS.get(job_id))
+    LOG.debug(f'No matching job {job_id} in Redis.')
     return {}
 
 
 def save_to_datestore(job_id, obj):
     LOG.info(f'putting {obj} into {job_id}')
-    mock_datastore[job_id] = obj
-
-# TODO REPLACE ^^
+    REDIS.set(job_id, json.dumps(obj))
 
 
 REST_CALLS = {  # Available calls mirrored in json schema
@@ -179,6 +185,8 @@ def get_source(config, override_url=None):
     resources = load_from_datastore(job_id)
     if not resources:
         resources = config.get('initial_query_resources', {})
+    else:
+        LOG.debug(f'Job {job_id} got resources: {resources}')
     resources['_builtins'] = dict(BUILTINS)  # Freeze a copy
     raw_data = {
         'resource': resources,

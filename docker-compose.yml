@@ -6,12 +6,20 @@ services:
     stdin_open: true
     tty: true
     environment:
+     - LOG_LEVEL=DEBUG
      - PORT=${PORT}
      - USERNAME=${USERNAME}
      - PASSWORD=${PASSWORD}
      - REALM=${REALM}
+    depends_on:
+      redis:
+        condition: service_started
     ports:
      - "${PORT}:${PORT}"
     volumes:
      - ./conf:/code/conf
     command: start
+
+  redis:
+    image: redis:3-alpine
+    command: ["--notify-keyspace-events", "KA", "--appendonly", "yes"]
