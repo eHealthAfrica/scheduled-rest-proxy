@@ -1,4 +1,11 @@
 version: "2.1"
+
+networks:
+  # docker network create aether_internal
+  aether:
+    external:
+      name: aether_internal
+
 services:
   rest-proxy:
     image: ehealthafrica/scheduled-rest-proxy
@@ -19,7 +26,11 @@ services:
     volumes:
      - ./conf:/code/conf
     command: start
+    networks:
+      - aether
 
   redis:
     image: redis:3-alpine
     command: ["--notify-keyspace-events", "KA", "--appendonly", "yes"]
+    networks:
+      - aether

@@ -23,7 +23,8 @@ import os
 
 import tornado
 
-os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'app.settings'  # needed by scheduler
+# needed by scheduler
+os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'app.settings'  # noqa
 
 from ndscheduler.server.server import SchedulerServer  # noqa
 from ndscheduler import settings  # noqa
@@ -32,6 +33,7 @@ from ndscheduler.server.handlers import audit_logs
 from ndscheduler.server.handlers import executions
 from ndscheduler.server.handlers import index
 from ndscheduler.server.handlers import jobs
+
 
 class AuthenticatedServer(SchedulerServer):
 

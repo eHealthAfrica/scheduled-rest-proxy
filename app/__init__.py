@@ -47,6 +47,7 @@ REDIS = redis.Redis(
             decode_responses=True
         )
 
+
 def load_from_datastore(job_id):
     if REDIS.exists(job_id):
         return json.loads(REDIS.get(job_id))
@@ -74,9 +75,16 @@ def handle_request_problems(_id, req):
         ERR.report(_id, ReportableError(f'{req.status_code} : {req.text}'))
         raise ReportableError()
     try:
-        return req.json()
+        res = req.json()
+        LOG.debug(f'response: {res}')
+        return res
     except Exception as err:
-        ERR.report(_id, ReportableError('Source API does not return JSON'))
+        try:
+            LOG.error(f'Non json response: {req.text}')
+            ERR.report(_id, ReportableError(f'Source API does not return JSON: {req.text}'))
+        except Exception as err2:
+            LOG.error(f'Could not report non-json response')
+            ERR.report(_id, ReportableError('Source API does not return JSON: no-text'))
         raise ReportableError()
 
 
@@ -152,6 +160,7 @@ def do_request(config, mapped_data, override_url=None):
     if headers:
         headers = data_from_datamap(mapped_data, headers)
     headers = {**token, **headers}  # merge in token if we have one
+    LOG.debug(json_body)
     return fn(
         full_url,
         auth=auth,
@@ -234,6 +243,7 @@ def send_to_destination(job_id, dest_config, constants, query_resource, row):
         'resource': resources,
         'constants': constants
     }
+    LOG.debug(raw_data)
     # send data to destination
     mapped_data = map_data(dest_config, raw_data)
     try:
