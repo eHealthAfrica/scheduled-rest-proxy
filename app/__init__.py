@@ -31,16 +31,19 @@ from .jsonpath import CachedParser
 from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 from .utils import BUILTINS, replace_nested
 
+SCHEMA = {}
+with open('schema.json') as f:
+    SCHEMA = json.load(f)
 
 # State persistence between job runs
 
 REDIS = redis.Redis(
-            host=REDIS_HOST,
-            port=REDIS_PORT,
-            db=REDIS_DB,
-            encoding="utf-8",
-            decode_responses=True
-        )
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    db=REDIS_DB,
+    encoding="utf-8",
+    decode_responses=True
+)
 
 
 def load_from_datastore(job_id):
@@ -53,6 +56,15 @@ def load_from_datastore(job_id):
 def save_to_datestore(job_id, obj):
     LOG.info(f'putting {obj} into {job_id}')
     REDIS.set(job_id, json.dumps(obj))
+
+
+DATAMAP_PARTS = [
+    'headers',
+    'query_params',
+    'json_body',
+    'form_body',
+    'save_resource'
+]
 
 
 REST_CALLS = {  # Available calls mirrored in json schema
@@ -73,20 +85,22 @@ def handle_request_problems(_id, req):
         res = req.json()
         LOG.debug(f'response: {res}')
         return res
-    except Exception as err:
+    except Exception:
         try:
             LOG.error(f'Non json response: {req.text}')
-            ERR.report(_id, ReportableError(f'Source API does not return JSON: {req.text}'))
-        except Exception as err2:
+            ERR.report(_id, ReportableError(
+                f'Source API does not return JSON: {req.text}'))
+        except Exception:
             LOG.error(f'Could not report non-json response')
-            ERR.report(_id, ReportableError('Source API does not return JSON: no-text'))
+            ERR.report(_id, ReportableError(
+                'Source API does not return JSON: no-text'))
         raise ReportableError()
 
 
-def data_from_datamap(datamap, keys):
+def data_from_datamap(datamap, requirements):
     # Grab requirements in keys from datamap
     data = {}
-    for key in keys:
+    for key in requirements.keys():
         if len(key.split('.')) > 1:
             # upsert output
             data = replace_nested(data, key.split('.'), datamap.get(key))
@@ -105,7 +119,9 @@ def data_from_datamap(datamap, keys):
 def map_data(config, raw_data):
     # generate a datamap from a set of raw data and an instruction set
     data_map = {}
-    requirements = config.get('datamap', {})
+    requirements = {}
+    for part in DATAMAP_PARTS:
+        requirements.update(config.get(part, {}))
     for key, path in requirements.items():
         matches = CachedParser.find(path, raw_data)
         if not matches:
@@ -125,7 +141,7 @@ def filter_config(config, target_prefix):
     }
 
 
-def do_request(config, mapped_data, override_url=None):
+def do_request(_id, config, mapped_data, override_url=None):
     url = config['url']
     try:
         if not override_url:
@@ -133,7 +149,8 @@ def do_request(config, mapped_data, override_url=None):
         else:
             full_url = override_url
     except KeyError as ker:
-        LOG.error(f'Error sending message in job {self._id}: {ker}' +
+        # self comes from parent class?
+        LOG.error(f'Error sending message in job {_id}: {ker}' +
                   f'{url} -> {mapped_data}')
         raise requests.URLRequired(f'bad argument in URL: {ker}')
     fn = REST_CALLS[config['type'].upper()]
@@ -145,6 +162,9 @@ def do_request(config, mapped_data, override_url=None):
         params = data_from_datamap(mapped_data, params)
     else:
         params = None
+    form_body = config.get('form_body')
+    if form_body:
+        form_body = data_from_datamap(mapped_data, config.get('form_body'))
     json_body = config.get('json_body')
     if json_body:
         json_body = data_from_datamap(mapped_data, json_body)
@@ -155,14 +175,22 @@ def do_request(config, mapped_data, override_url=None):
     if headers:
         headers = data_from_datamap(mapped_data, headers)
     headers = {**token, **headers}  # merge in token if we have one
-    LOG.debug(json_body)
-    return fn(
-        full_url,
-        auth=auth,
-        headers=headers,
-        params=params,
-        json=json_body
-    )
+    request_kwargs = {
+        'auth': auth,
+        'headers': headers,
+        'params': params,
+        'json': json_body,
+        'data': form_body
+    }
+    if not config.get('mock_request', False):
+        return fn(
+            full_url,
+            **request_kwargs
+        )
+    request_kwargs['full_url'] = full_url
+    LOG.debug(request_kwargs)
+    ERR.report(_id, json.dumps(request_kwargs))
+    raise ReportableError()
 
 
 def handle_job(config, *args, **kwargs):
@@ -183,8 +211,6 @@ def handle_job(config, *args, **kwargs):
 
 def get_source(config, override_url=None):
     job_id = config['id']
-    constants = config.get('constants', {})  # optional
-
     # get state from datastore
     resources = load_from_datastore(job_id)
     if not resources:
@@ -198,7 +224,12 @@ def get_source(config, override_url=None):
     }
     source_config = filter_config(config, 'source_')
     mapped_data = map_data(source_config, raw_data)
-    source = do_request(source_config, mapped_data, override_url=override_url)
+    source = do_request(
+        job_id,
+        source_config,
+        mapped_data,
+        override_url=override_url
+    )
     return handle_request_problems(job_id, source)
 
 
@@ -238,16 +269,14 @@ def send_to_destination(job_id, dest_config, constants, query_resource, row):
         'resource': resources,
         'constants': constants
     }
-    LOG.debug(raw_data)
     # send data to destination
     mapped_data = map_data(dest_config, raw_data)
     try:
-        req = do_request(dest_config, mapped_data)
-        handle_request_problems(job_id, req)
+        req = do_request(job_id, dest_config, mapped_data)
+        if req:
+            handle_request_problems(job_id, req)
     except ReportableError:
         return  # Don't change resources on failure
     ERR.report_ok(job_id)
-    if query_resource:
-        # update resources
-        resources = data_from_datamap(mapped_data, query_resource)
-        save_to_datestore(job_id, resources)
+    resources = data_from_datamap(mapped_data, query_resource)
+    save_to_datestore(job_id, resources)

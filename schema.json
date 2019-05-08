@@ -10,10 +10,8 @@
     "source_url",
     "source_type",
     "source_msg_path",
-    "source_datamap",
     "dest_type",
-    "dest_url",
-    "dest_datamap"
+    "dest_url"
   ],
   "properties": {
     "id": {
@@ -45,6 +43,9 @@
           "anyOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "integer"
             },
             {
               "type": "null"
@@ -98,6 +99,11 @@
       ],
       "pattern": "^(.*)$"
     },
+    "source_mock_request": {
+      "$id": "#/properties/dest_mock_request",
+      "type": "boolean",
+      "title": "Mock the source request?"
+    },
     "source_type": {
       "$id": "#/properties/source_type",
       "type": "string",
@@ -143,15 +149,18 @@
       ],
       "pattern": "^(.*)$"
     },
-    "source_datamap": {
-      "$id": "#/properties/source_datamap",
+    "source_headers": {
+      "$id": "#/properties/source_headers",
+      "title": "The Source Headers Schema",
       "type": "object",
-      "title": "The Source_datamap Schema",
       "patternProperties": {
         "^.*$": {
           "anyOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "integer"
             },
             {
               "type": "null"
@@ -161,53 +170,47 @@
       },
       "additionalProperties": false
     },
-    "source_headers": {
-      "$id": "#/properties/source_headers",
-      "type": "array",
-      "title": "The Source Headers Schema",
-      "items": {
-        "$id": "#/properties/source_headers/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "next",
-          "since"
-        ],
-        "pattern": "^(.*)$"
-      }
-    },
     "source_query_params": {
       "$id": "#/properties/source_query_params",
-      "type": "array",
       "title": "The Source_query_params Schema",
-      "items": {
-        "$id": "#/properties/source_query_params/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "since",
-          "resource_type"
-        ],
-        "pattern": "^(.*)$"
-      }
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "source_json_body": {
       "$id": "#/properties/source_json_body",
-      "type": "array",
       "title": "The Source_json_body Schema",
-      "items": {
-        "$id": "#/properties/source_json_body/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "next",
-          "since"
-        ],
-        "pattern": "^(.*)$"
-      }
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "dest_type": {
       "$id": "#/properties/dest_type",
@@ -229,6 +232,11 @@
       ],
       "pattern": "^(.*)$"
     },
+    "dest_mock_request": {
+      "$id": "#/properties/dest_mock_request",
+      "type": "boolean",
+      "title": "The Dest_url Schema"
+    },
     "dest_basic_auth": {
       "$id": "#/properties/dest_basic_auth",
       "type": "object",
@@ -244,10 +252,10 @@
       ],
       "pattern": "^(.*)$"
     },
-    "dest_datamap": {
-      "$id": "#/properties/dest_datamap",
+    "dest_save_resource": {
+      "$id": "#/properties/dest_save_resource",
       "type": "object",
-      "title": "The Dest_datamap Schema",
+      "title": "The Resource to Save into the database",
       "patternProperties": {
         "^.*$": {
           "anyOf": [
@@ -264,51 +272,66 @@
     },
     "dest_headers": {
       "$id": "#/properties/dest_headers",
-      "type": "array",
       "title": "The Destination Headers Schema",
-      "items": {
-        "$id": "#/properties/dest_headers/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "next",
-          "since"
-        ],
-        "pattern": "^(.*)$"
-      }
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "dest_query_params": {
       "$id": "#/properties/dest_query_params",
-      "type": "array",
       "title": "The Dest_query_params Schema",
-      "items": {
-        "$id": "#/properties/dest_query_params/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "since",
-          "redest_type"
-        ],
-        "pattern": "^(.*)$"
-      }
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "dest_json_body": {
       "$id": "#/properties/dest_json_body",
-      "type": "array",
       "title": "The Dest_json_body Schema",
-      "items": {
-        "$id": "#/properties/dest_json_body/items",
-        "type": "string",
-        "title": "The Items Schema",
-        "default": "",
-        "examples": [
-          "next",
-          "since"
-        ],
-        "pattern": "^(.*)$"
-      }
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   }
 }
