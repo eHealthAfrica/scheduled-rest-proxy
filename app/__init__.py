@@ -31,11 +31,6 @@ from .jsonpath import CachedParser
 from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 from .utils import BUILTINS, replace_nested
 
-# Load Schema for Job Configuration
-
-SCHEMA = None
-with open('job_spec.json') as f:
-    SCHEMA = json.load(f)
 
 # State persistence between job runs
 
