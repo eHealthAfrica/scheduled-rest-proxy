@@ -63,7 +63,8 @@ def replace_nested(_dict, keys, value):
             # HAS_ARRAY regex -> (.+)\[(.+)\]
             array_key = HAS_ARRAY.split(keys[0])[1]
             _array = _dict.get(array_key, [])
-            _array.append(value)
+            if value is not None:  # no good reason to add nulls to lists
+                _array.append(value)
             _dict[array_key] = _array
     return _dict
 
