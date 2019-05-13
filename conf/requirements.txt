@@ -1,4 +1,4 @@
-jsonpath-ng==1.4.3
+eha-jsonpath==0.1.1
 jsonschema==2.6.0
 ndscheduler==0.3.0
 redis==3.0.1
