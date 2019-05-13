@@ -21,7 +21,10 @@
 
 import collections
 from datetime import datetime
+import re
 from uuid import uuid4
+
+HAS_ARRAY = re.compile(r'(.+)\[(.+)\]')
 
 
 class CallableDict(collections.UserDict):
@@ -53,7 +56,15 @@ def replace_nested(_dict, keys, value):
         except KeyError:  # Level doesn't exist yet
             _dict[keys[0]] = replace_nested({}, keys[1:], value)
     else:
-        _dict[keys[0]] = value
+        # last key
+        if not HAS_ARRAY.match(keys[0]):
+            _dict[keys[0]] = value
+        else:
+            # HAS_ARRAY regex -> (.+)\[(.+)\]
+            array_key = HAS_ARRAY.split(keys[0])[1]
+            _array = _dict.get(array_key, [])
+            _array.append(value)
+            _dict[array_key] = _array
     return _dict
 
 
