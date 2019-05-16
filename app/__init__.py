@@ -100,7 +100,10 @@ def handle_request_problems(_id, req):
 def data_from_datamap(datamap, requirements):
     # Grab requirements in keys from datamap
     data = {}
-    for key in requirements.keys():
+    keys = requirements \
+        if isinstance(requirements, list) \
+        else requirements.keys()
+    for key in keys:
         if len(key.split('.')) > 1:
             # upsert output
             data = replace_nested(data, key.split('.'), datamap.get(key))
