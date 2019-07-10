@@ -19,7 +19,12 @@
 # under the License.
 
 from app.server import AuthenticatedServer
+from app.settings import REQUIRES_AUTH
+from ndscheduler.server.server import SchedulerServer
 
 
 if __name__ == '__main__':
-    AuthenticatedServer.run()
+    if REQUIRES_AUTH:
+        AuthenticatedServer.run()
+    else:
+        SchedulerServer.run()

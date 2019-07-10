@@ -56,3 +56,5 @@ BASIC_AUTH_CONFIG = {
     'pass': os.environ.get('PASSWORD', ''),
     'realm': os.environ.get('REALM', 'Aether Scheduler')
 }
+
+REQUIRES_AUTH = bool(os.environ.get('REQUIRES_AUTH', False))
