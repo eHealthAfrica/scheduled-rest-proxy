@@ -58,3 +58,4 @@ BASIC_AUTH_CONFIG = {
 }
 
 REQUIRES_AUTH = bool(os.environ.get('REQUIRES_AUTH', False))
+APP_PREFIX = os.environ.get('APP_PREFIX', None)

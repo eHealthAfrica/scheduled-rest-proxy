@@ -26,6 +26,8 @@ import tornado
 # needed by scheduler
 os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'app.settings'  # noqa
 
+import re
+
 from ndscheduler.server.server import SchedulerServer  # noqa
 from ndscheduler import settings  # noqa
 from ndscheduler.core import scheduler_manager
@@ -33,6 +35,19 @@ from ndscheduler.server.handlers import audit_logs
 from ndscheduler.server.handlers import executions
 from ndscheduler.server.handlers import index
 from ndscheduler.server.handlers import jobs
+
+from .settings import APP_PREFIX
+
+
+class UnAuthenticatedServer(SchedulerServer):
+
+    def __init__(self, scheduler_instance):
+        super(UnAuthenticatedServer, self).__init__()
+        if APP_PREFIX:
+            for handler in self.application.handlers[0][1]:
+                handler.regex = re.compile(
+                    handler.regex.pattern.replace('/', f'/{APP_PREFIX}/', 1)
+                )
 
 
 class AuthenticatedServer(SchedulerServer):
@@ -61,6 +76,11 @@ class AuthenticatedServer(SchedulerServer):
             (r'/api/%s/logs' % self.VERSION, require_basic_auth(audit_logs.Handler, settings.BASIC_AUTH_CONFIG)),
         ]
         self.application = tornado.web.Application(URLS, **self.tornado_settings)
+        if APP_PREFIX:
+            for handler in self.application.handlers[0][1]:
+                handler.regex = re.compile(
+                    handler.regex.pattern.replace('/', f'/{APP_PREFIX}/', 1)
+                )
 
 
 # Taken from unmerged PR#18 in NDScheduler
