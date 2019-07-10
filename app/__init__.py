@@ -192,7 +192,12 @@ def do_request(_id, config, mapped_data, override_url=None):
         )
     request_kwargs['full_url'] = full_url
     LOG.debug(request_kwargs)
-    ERR.report(_id, json.dumps(request_kwargs))
+    try:
+        ERR.report(_id, json.dumps(request_kwargs))
+    except TypeError:
+        ERR.report(_id, json.dumps(
+            [(k, str(v)) for k, v in request_kwargs.items()]
+        ))
     raise ReportableError()
 
 
