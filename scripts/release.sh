@@ -30,8 +30,6 @@ function build_and_push {
     echo "Building image: ${TAG}"
     docker build \
         --pull \
-        --no-cache \
-        --force-rm \
         --tag $TAG \
         .
 
