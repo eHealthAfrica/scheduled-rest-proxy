@@ -78,7 +78,9 @@ REST_CALLS = {  # Available calls mirrored in json schema
 
 
 def handle_request_problems(_id, req):
-    if not req.status_code < 300:
+    try:
+        req.raise_for_status()
+    except Exception:
         ERR.report(_id, ReportableError(f'{req.status_code} : {req.text}'))
         raise ReportableError()
     try:
@@ -281,8 +283,8 @@ def send_to_destination(job_id, dest_config, constants, query_resource, row):
     mapped_data = map_data(dest_config, raw_data)
     try:
         req = do_request(job_id, dest_config, mapped_data)
-        if req:
-            handle_request_problems(job_id, req)
+        LOG.debug(f'{job_id} : {req.status_code}')
+        handle_request_problems(job_id, req)
     except ReportableError:
         return  # Don't change resources on failure
     ERR.report_ok(job_id)
