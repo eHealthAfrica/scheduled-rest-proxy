@@ -185,7 +185,8 @@ def do_request(_id, config, mapped_data, override_url=None):
         'headers': headers,
         'params': params,
         'json': json_body,
-        'data': form_body
+        'data': form_body,
+        'verify': False
     }
     if not config.get('mock_request', False):
         return fn(
