@@ -1,5 +1,5 @@
 eha-jsonpath==0.5.1
 jsonschema==2.6.0
 ndscheduler==0.3.0
-redis==3.0.1
+redis==4.5.3
 requests==2.22.0
